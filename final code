@@ -1,0 +1,165 @@
+ 
+#include <NewPing.h>
+#include <Servo.h> 
+
+#define TRIG_PIN A0 
+#define ECHO_PIN A1 
+#define MAX_DISTANCE 500 
+int in1 = 6; 
+int in2 = 7;
+int in3 = 10;
+int in4 = 11;
+
+NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE); 
+
+Servo myservo;   
+
+boolean goesForward=false;
+int distance = 100;
+
+
+void setup() {
+pinMode(in1, OUTPUT);
+pinMode(in2, OUTPUT);
+pinMode(in3, OUTPUT);
+pinMode(in4, OUTPUT);
+
+  myservo.attach(4);  
+  myservo.write(115); 
+  delay(2000);
+  distance = readPing();
+  delay(100);
+  distance = readPing();
+  delay(100);
+  distance = readPing();
+  delay(100);
+  distance = readPing();
+  delay(100);
+}
+
+void loop() {
+ int distanceR = 0;
+ int distanceL =  0;
+ delay(100);
+ 
+ if(distance<=20)
+ {
+  moveStop();
+  delay(100);
+  moveBackward();
+  delay(900);
+  moveStop();
+  delay(200);
+  distanceR = lookRight();
+  delay(200);
+  distanceL = lookLeft();
+  delay(200);
+
+  if(distanceR<=distanceL)
+  {
+    turnLeft();
+    
+    moveStop();
+    moveForward();
+  }
+  else
+  {
+    turnRight();
+    moveStop();
+    moveForward();
+    
+    
+  }
+ }else
+ {
+  moveForward();
+ }
+ distance = readPing();
+} 
+
+int lookRight()
+{
+    myservo.write(50); 
+    delay(500);
+    int distance = readPing();
+    delay(100);
+    myservo.write(115); 
+    return distance;
+}
+
+int lookLeft()
+{
+    myservo.write(170); 
+    delay(500);
+    int distance = readPing();
+    delay(100);
+    myservo.write(115); 
+    return distance;
+    delay(100);
+}
+
+int readPing() { 
+  delay(70);
+  int cm = sonar.ping_cm();
+  if(cm==0)
+  {
+    cm = 250;
+  }
+  return cm;
+}
+
+void moveStop() {
+  digitalWrite(in1,LOW); //Stopping the car
+  digitalWrite(in2,LOW);
+  digitalWrite(in3,LOW);
+  digitalWrite(in4,LOW);
+  //delay(2000); 
+  } 
+  
+void moveForward() {
+
+// if(!goesForward)
+ // {
+    goesForward=true;
+digitalWrite(in1, HIGH); //Making car go forward
+digitalWrite(in2, LOW);
+digitalWrite(in4, LOW);
+digitalWrite(in3, HIGH);
+   
+// }
+}
+
+void moveBackward() {
+   digitalWrite(in1, LOW); //Making the car go backwards
+   digitalWrite(in2, HIGH);
+   digitalWrite(in4, HIGH);
+   digitalWrite(in3, LOW);
+   
+  
+}  
+
+void turnRight() {
+ digitalWrite(in3, HIGH); //Making the car go right
+digitalWrite(in4, LOW);
+digitalWrite(in2, HIGH);
+digitalWrite(in1, LOW);
+delay(4600); 
+/*digitalWrite(in1, HIGH); //Making car go forward
+digitalWrite(in2, LOW);
+digitalWrite(in4, LOW);
+digitalWrite(in3, HIGH);  */
+  
+    
+} 
+ 
+  void turnLeft() {
+digitalWrite(in1, HIGH); //Making the car go left
+digitalWrite(in2, LOW);
+digitalWrite(in3, LOW);
+digitalWrite(in4, HIGH);
+delay(4100);
+/*digitalWrite(in1, HIGH); //Making car go forward
+digitalWrite(in2, LOW);
+digitalWrite(in4, LOW);
+digitalWrite(in3, HIGH);*/
+   }
